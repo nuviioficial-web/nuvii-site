@@ -27,8 +27,7 @@
   <header class="py-6 px-4">
     <div class="container mx-auto">
       <div class="flex justify-center">
-        <!-- Coloque um arquivo logo.png na mesma pasta deste HTML -->
-        <img src="Logo.Nuvii.REDUZ-Photoroom.png" onerror="this.src='Logo.Nuvii.REDUZ-Photoroom.png" class="w-[120px] md:w-[150px]">
+        <img src="Logo.Nuvii.REDUZ-Photoroom.png" onerror="this.src='Logo.Nuvii.REDUZ-Photoroom.png'" class="w-[120px] md:w-[150px]">
       </div>
       <h1 class="text-center text-2xl md:text-3xl font-semibold mt-4 text-gray-800">Seus achados da Shopee</h1>
     </div>
@@ -36,6 +35,16 @@
 
   <main class="flex-grow container mx-auto px-4 pb-12">
     <div id="alert" class="hidden mb-6 p-3 rounded-md bg-yellow-50 text-yellow-900 border border-yellow-200 text-sm"></div>
+
+    <!-- BARRA DE PESQUISA -->
+    <div class="flex justify-center mb-4">
+      <input 
+        id="search-input"
+        type="text" 
+        placeholder="Pesquisar produtos..." 
+        class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+    </div>
 
     <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
       <button class="filter-btn active px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium transition-all" data-category="all">Todos</button>
@@ -64,6 +73,7 @@
   const productsContainer = document.getElementById('products-container');
   const filterButtons = document.querySelectorAll('.filter-btn');
   const alertBox = document.getElementById('alert');
+  let products = []; // vamos manter a lista global
 
   function showAlert(msg) {
     alertBox.textContent = msg;
@@ -122,12 +132,29 @@
       button.addEventListener('click', function () {
         filterButtons.forEach(btn => btn.classList.remove('active'));
         this.classList.add('active');
-        const category = (this.dataset.category || '').toLowerCase();
-        if (category === 'all') { displayProducts(products); return; }
-        const filtered = products.filter(p => p.category === category);
-        displayProducts(filtered);
+        filterProducts();
       });
     });
+  }
+
+  // === FILTRO DE PESQUISA E CATEGORIA ===
+  const searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('input', filterProducts);
+
+  function filterProducts() {
+    const query = (searchInput.value || '').trim().toLowerCase();
+    const activeCategoryBtn = document.querySelector('.filter-btn.active');
+    const category = activeCategoryBtn ? activeCategoryBtn.dataset.category : 'all';
+
+    let filtered = products;
+    if (category !== 'all') {
+      filtered = filtered.filter(p => p.category === category);
+    }
+    if (query) {
+      filtered = filtered.filter(p => p.name.toLowerCase().includes(query));
+    }
+
+    displayProducts(filtered);
   }
 
   function init() {
@@ -138,7 +165,7 @@
       complete: function (results) {
         hideAlert();
         const rows = (results.data || []).map(normalizeKeys).filter(r => r.name || r.image || r.link);
-        const products = rows.map(r => ({
+        products = rows.map(r => ({
           name: (r.name || '').trim(),
           price: (r.price || '').trim(),
           image: (r.image || '').trim(),
