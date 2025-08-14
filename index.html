@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuvii - Seus achados da Shopee</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- PapaParse para ler a planilha CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+    .product-card { transition: all 0.3s ease; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 174, 239, 0.1); }
+    .fade-in { animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .filter-btn.active { background-color: #00AEEF; color: white; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="py-6 px-4">
+    <div class="container mx-auto">
+      <div class="flex justify-center">
+        <!-- Coloque um arquivo logo.png na mesma pasta deste HTML -->
+        <img src="Logo.Nuvii.REDUZ-Photoroom.png" onerror="this.src='Logo.Nuvii.REDUZ-Photoroom.png" class="w-[120px] md:w-[150px]">
+      </div>
+      <h1 class="text-center text-2xl md:text-3xl font-semibold mt-4 text-gray-800">Seus achados da Shopee</h1>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 pb-12">
+    <div id="alert" class="hidden mb-6 p-3 rounded-md bg-yellow-50 text-yellow-900 border border-yellow-200 text-sm"></div>
+
+    <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+      <button class="filter-btn active px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium transition-all" data-category="all">Todos</button>
+      <button class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium transition-all" data-category="gamer">Gamer</button>
+      <button class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium transition-all" data-category="home">Home</button>
+      <button class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium transition-all" data-category="beauty">Beauty</button>
+      <button class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium transition-all" data-category="pet">Pet</button>
+    </div>
+
+    <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </main>
+
+  <footer class="py-6 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <p class="text-center text-gray-500 text-sm">© 2025 Nuvii - Todos os direitos reservados</p>
+    </div>
+  </footer>
+
+<script>
+  // === CONFIGURAÇÃO DA PLANILHA ONLINE ===
+  const GOOGLE_SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5lir8J6DTmWER3TUitpJAUTm0uq5aYl8votwX7bZOKuX3_XnzBt8m4DaPEQ0dAJP8uLAhd0Ld1m7X/pub?output=csv";
+  
+  // Usando proxy CORS para evitar bloqueios
+  const SHEET_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_SHEET_CSV);
+
+  const productsContainer = document.getElementById('products-container');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const alertBox = document.getElementById('alert');
+
+  function showAlert(msg) {
+    alertBox.textContent = msg;
+    alertBox.classList.remove('hidden');
+  }
+
+  function hideAlert() {
+    alertBox.classList.add('hidden');
+  }
+
+  function normalizeKeys(row) {
+    const out = {};
+    Object.keys(row).forEach(k => {
+      const nk = k.replace(/\ufeff/g, '').trim().toLowerCase();
+      out[nk] = row[k];
+    });
+    return out;
+  }
+
+  function mapCategory(cat) {
+    const c = (cat || '').toString().trim().toLowerCase();
+    if (c === 'games' || c === 'game') return 'gamer';
+    if (c === 'pets' || c === 'petshop') return 'pet';
+    if (['gamer', 'home', 'beauty', 'pet'].includes(c)) return c;
+    return 'others';
+  }
+
+  function displayProducts(list) {
+    productsContainer.innerHTML = '';
+    if (!list || list.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'col-span-full text-center text-gray-500';
+      empty.textContent = 'Nenhum produto encontrado.';
+      productsContainer.appendChild(empty);
+      return;
+    }
+
+    list.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-md fade-in';
+      card.innerHTML = `
+        <div class="h-48 overflow-hidden bg-gray-100">
+          <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+indisponivel'">
+        </div>
+        <div class="p-4">
+          <h3 class="font-medium text-gray-800 mb-1 line-clamp-2">${product.name || ''}</h3>
+          <p class="text-lg font-semibold text-blue-500 mb-3">${product.price || ''}</p>
+          <a href="${product.link}" target="_blank" rel="noopener" class="block w-full bg-blue-500 hover:bg-blue-600 text-white text-center py-2 rounded-md transition-colors">Ver na Shopee</a>
+        </div>`;
+      productsContainer.appendChild(card);
+    });
+  }
+
+  function attachFilters(products) {
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        const category = (this.dataset.category || '').toLowerCase();
+        if (category === 'all') { displayProducts(products); return; }
+        const filtered = products.filter(p => p.category === category);
+        displayProducts(filtered);
+      });
+    });
+  }
+
+  function init() {
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      skipEmptyLines: 'greedy',
+      complete: function (results) {
+        hideAlert();
+        const rows = (results.data || []).map(normalizeKeys).filter(r => r.name || r.image || r.link);
+        const products = rows.map(r => ({
+          name: (r.name || '').trim(),
+          price: (r.price || '').trim(),
+          image: (r.image || '').trim(),
+          link: (r.link || '').trim(),
+          category: mapCategory(r.category)
+        })).filter(p => p.name && p.image && p.link);
+
+        displayProducts(products);
+        attachFilters(products);
+
+        if (products.length === 0) {
+          showAlert('Não encontrei produtos válidos na planilha. Verifique os cabeçalhos (name, price, image, link, category) e se há URLs válidas.');
+        }
+      },
+      error: function (err) {
+        console.error(err);
+        showAlert('Falha ao carregar a planilha online.');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
