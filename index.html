@@ -40,26 +40,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
   <style>
-    body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-    .mobile-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background-color: #1e293b;
-      padding: 1rem;
-      z-index: 100;
-    }
-    .mobile-menu.active {
-      display: block;
-    }
-    .mobile-menu a {
-      display: block;
-      color: white;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+    body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
     .product-card {
       transition: all 0.3s ease;
       border: 1px solid rgba(0,0,0,0.05);
@@ -168,6 +149,47 @@
     .copy-btn.copied {
       background: #10b981;
     }
+    /* Mobile menu styles */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+    }
+    .mobile-menu.active {
+      transform: translateX(0);
+    }
+    .mobile-menu a {
+      color: white;
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      transition: all 0.3s;
+    }
+    .mobile-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .close-menu-btn {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      color: white;
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -179,16 +201,11 @@
             <img src="Logo.Nuvii.REDUZ-Photoroom.png" onerror="this.src='Logo.Nuvii.REDUZ-Photoroom.png'" class="w-[80px] md:w-[100px]">
             <h1 class="text-gray-100 text-2xl md:text-3xl font-semibold hidden sm:block">Nuvii</h1>
           </div>
-          <button id="mobile-menu-button" class="md:hidden text-white">
+          <button id="mobile-menu-btn" class="md:hidden text-white">
             <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
-        
-        <div id="mobile-menu" class="mobile-menu md:hidden">
-          <a href="#" class="nav-link" data-category="all">Início</a>
-          <a href="#" id="mobile-coupons-link" class="nav-link">Cupons</a>
-        </div>
-        
+                
         <div class="flex-1 max-w-2xl">
           <div class="search-container">
             <input 
@@ -199,7 +216,7 @@
             />
           </div>
         </div>
-        
+                
         <nav class="hidden md:flex items-center gap-6">
           <a href="#" class="text-gray-100 hover:text-white nav-link" data-category="all">Início</a>
           <a href="#" id="categories-link" class="text-gray-100 hover:text-white nav-link">Cupons</a>
@@ -207,6 +224,32 @@
       </div>
     </div>
   </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="mobile-menu">
+    <button class="close-menu-btn">
+      <i class="fas fa-times"></i>
+    </button>
+    <a href="#" class="mobile-nav-link" data-category="all">Início</a>
+    <a href="#" class="mobile-nav-link" id="mobile-categories-link">Cupons</a>
+    <div class="flex flex-col items-center mt-4">
+      <a href="https://www.tiktok.com/@nuvii.games" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Games
+      </a>
+      <a href="https://www.tiktok.com/@nuvii.beauty" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Beauty
+      </a>
+      <a href="https://www.tiktok.com/@nuvii.home" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Home
+      </a>
+      <a href="https://www.tiktok.com/@nuvii.pet" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Pet
+      </a>
+      <a href="https://www.instagram.com/nuvii_oficial/" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-instagram w-5 text-center"></i> Nuvii Oficial
+      </a>
+    </div>
+  </div>
 
   <div id="categories-dropdown" class="bg-gray-800 shadow-lg sticky top-16 z-30">
     <div class="container mx-auto px-4 py-4">
@@ -298,6 +341,9 @@
   const alertBox = document.getElementById('alert');
   const searchInput = document.getElementById('search-input');
   const backToTopBtn = document.getElementById('back-to-top');
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const closeMenuBtn = document.querySelector('.close-menu-btn');
 
   let products = [];
 
@@ -428,6 +474,22 @@
     });
   }
 
+  // Mobile menu functionality
+  function toggleMobileMenu() {
+    mobileMenu.classList.toggle('active');
+    document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+  }
+
+  mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+  closeMenuBtn.addEventListener('click', toggleMobileMenu);
+
+  // Close mobile menu when clicking on a link
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', function() {
+      toggleMobileMenu();
+    });
+  });
+
   // BOTÃO VOLTAR AO TOPO
   window.addEventListener('scroll', () => {
     if (window.scrollY > 300) backToTopBtn.style.display = 'block';
@@ -440,10 +502,9 @@
 
   // Search functionality
   searchInput.addEventListener('input', filterProducts);
-
-
+  
   // Make nav links with data-category work like filter buttons
-  document.querySelectorAll('.nav-link[data-category]').forEach(link => {
+  document.querySelectorAll('.nav-link[data-category], .mobile-nav-link[data-category]').forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
       document.getElementById('main-content').classList.remove('hidden');
@@ -460,6 +521,15 @@
     document.getElementById('main-content').classList.add('hidden');
     document.getElementById('coupons-screen').classList.remove('hidden');
     showCoupons();
+  });
+
+  // Mobile coupons link
+  document.getElementById('mobile-categories-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('main-content').classList.add('hidden');
+    document.getElementById('coupons-screen').classList.remove('hidden');
+    showCoupons();
+    toggleMobileMenu();
   });
 
   function showCoupons() {
@@ -537,24 +607,10 @@
     
     // Set fixed margin for main content
     document.getElementById('main-content').style.marginTop = '4rem';
-
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    mobileMenuButton.addEventListener('click', function() {
-      mobileMenu.classList.toggle('active');
-    });
-
-    // Make mobile coupons link work
-    document.getElementById('mobile-coupons-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      mobileMenu.classList.remove('active');
-      document.getElementById('main-content').classList.add('hidden');
-      document.getElementById('coupons-screen').classList.remove('hidden');
-      showCoupons();
-    });
   });
+
+  // Make copyCouponCode function available globally
+  window.copyCouponCode = copyCouponCode;
 </script>
 </body>
 </html>
