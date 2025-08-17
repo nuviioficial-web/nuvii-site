@@ -1,616 +1,939 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nuvii - Seus achados da Shopee</title>
-  <meta name="description" content="Nuvii - Encontre os melhores achados da Shopee, de Gamer a Home e Pet!">
-  <link rel="icon" href="Logo.Nuvii.REDUZ-Photoroom.png" type="image/png">
-  
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            }
-          }
-        }
-      }
+<!DOCTYPE html> 
+<html lang="pt-BR"> 
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+  <title>Nuvii - Seus achados da Shopee</title>  
+  <meta name="description" content="Nuvii - Encontre os melhores achados da Shopee, de Gamer a Home e Pet!">  
+  <link rel="icon" href="Logo.Nuvii.REDUZ-Photoroom.png" type="image/png">      
+  <!-- Tailwind -->  
+  <script src="https://cdn.tailwindcss.com"></script>  
+  <script>    
+    tailwind.config = {      
+      theme: {        
+        extend: {          
+          colors: {            
+            primary: {              
+              50: '#f0f9ff',              
+              100: '#e0f2fe',              
+              200: '#bae6fd',              
+              300: '#7dd3fc',              
+              400: '#38bdf8',              
+              500: '#0ea5e9',              
+              600: '#0284c7',              
+              700: '#0369a1',              
+              800: '#075985',              
+              900: '#0c4a6e',             
+            }          
+          }        
+        }      
+      }    
+    }  
+  </script>  
+  <!-- PapaParse -->  
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>      
+  <link rel="preconnect" href="https://fonts.googleapis.com">  
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />      
+  <style>    
+    body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }    
+    .product-card {      
+      transition: all 0.3s ease;      
+      border: 1px solid rgba(0,0,0,0.05);    
+    }    
+    .product-card:hover {      
+      transform: translateY(-5px);      
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);    
+    }    
+    .fade-in { animation: fadeIn 0.5s ease-in; }    
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }    
+    .filter-btn {      
+      background-color: #374151;      
+      color: white;      
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);      
+      border: 1px solid rgba(255,255,255,0.1);    
+    }    
+    .filter-btn.active {      
+      font-weight: 500;      
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);    
+    }    
+    .filter-btn[data-category="all"].active {      
+      background-color: #0ea5e9;    
+    }    
+    .filter-btn[data-category="gamer"].active {      
+      background-color: #8b5cf6;    
+    }    
+    .filter-btn[data-category="home"].active {      
+      background-color: #3b82f6;    
+    }    
+    .filter-btn[data-category="beauty"].active {      
+      background-color: #ec4899;    
+    }    
+    .filter-btn[data-category="pet"].active {      
+      background-color: #10b981;    
+    }    
+    #back-to-top {      
+      position: fixed;      
+      bottom: 30px;      
+      right: 30px;      
+      background-color: #0ea5e9;      
+      color: white;      
+      padding: 12px 14px;      
+      border-radius: 50%;      
+      cursor: pointer;      
+      display: none;      
+      z-index: 50;      
+      transition: all 0.3s;      
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);      
+      font-size: 16px;      
+      border: 1px solid rgba(255,255,255,0.1);    
+    }    
+    #back-to-top:hover {      
+      background-color: #0284c7;      
+      transform: translateY(-2px);      
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);    
+    }    
+    .nav-link {      
+      position: relative;      
+      padding-bottom: 4px;    
+    }    
+    .nav-link::after {      
+      content: '';      
+      position: absolute;      
+      bottom: 0;      
+      left: 0;      
+      width: 0;      
+      height: 2px;      
+      background-color: #0ea5e9;      
+      transition: width 0.3s ease;    
+    }    
+    .nav-link:hover::after {      
+      width: 100%;    
+    }    
+    .search-container {      
+      position: relative;    
+    }    
+    .header-gradient {      
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);    
+    }    
+    .coupon-card {      
+      background: white;      
+      border-radius: 0.5rem;      
+      padding: 1rem 1.5rem;      
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);    
+    }    
+    .coupon-code {      
+      background: #f3f4f6;      
+      padding: 0.5rem 1rem;      
+      border-radius: 0.25rem;      
+      font-family: monospace;      
+      font-weight: 600;    
+    }    
+    .copy-btn {      
+      background: #0ea5e9;      
+      color: white;      
+      border: none;      
+      padding: 0.5rem 1rem;      
+      border-radius: 0.25rem;      
+      cursor: pointer;      
+      transition: background 0.2s;      
+      font-weight: 500;    
+    }    
+    .copy-btn:hover {      
+      background: #0284c7;    
+    }    
+    .copy-btn.copied {      
+      background: #10b981;    
+    }    
+    /* Mobile menu styles */    
+    .mobile-menu {      
+      position: fixed;      
+      top: 0;      
+      left: 0;      
+      width: 100%;      
+      height: 100vh;      
+      background-color: rgba(0, 0, 0, 0.9);      
+      z-index: 100;      
+      display: flex;      
+      flex-direction: column;      
+      align-items: center;      
+      justify-content: center;      
+      transform: translateX(-100%);      
+      transition: transform 0.3s ease-in-out;    
+    }    
+    .mobile-menu.active {      
+      transform: translateX(0);    
+    }    
+    .mobile-menu a {      
+      color: white;      
+      font-size: 1.5rem;      
+      margin: 1rem 0;      
+      text-decoration: none;      
+      padding: 0.5rem 1rem;      
+      border-radius: 0.25rem;      
+      transition: all 0.3s;    
+    }    
+    .mobile-menu a:hover {      
+      background-color: rgba(255, 255, 255, 0.1);    
+    }    
+    .close-menu-btn {      
+      position: absolute;      
+      top: 1.5rem;      
+      right: 1.5rem;      
+      color: white;      
+      font-size: 1.5rem;      
+      background: none;      
+      border: none;      
+      cursor: pointer;    
+    }    
+    /* Sort dropdown styles */    
+    .sort-dropdown {      
+      position: relative;      
+      display: inline-block;      
+      margin-left: auto;    
+    }    
+    .sort-btn {      
+      background-color: white;      
+      color: #374151;      
+      border: 1px solid #d1d5db;      
+      padding: 0.5rem 1rem;      
+      border-radius: 0.375rem;      
+      cursor: pointer;      
+      display: flex;      
+      align-items: center;      
+      gap: 0.5rem;      
+      font-weight: 500;      
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);    
+    }    
+    .sort-btn:hover {      
+      background-color: #f3f4f6;    
+    }    
+    .sort-dropdown-content {      
+      display: none;      
+      position: absolute;      
+      right: 0;      
+      background-color: white;      
+      min-width: 160px;      
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);      
+      border-radius: 0.375rem;      
+      z-index: 1;      
+      overflow: hidden;    
+    }    
+    .sort-dropdown-content a {      
+      color: #374151;      
+      padding: 0.75rem 1rem;      
+      text-decoration: none;      
+      display: block;      
+      font-size: 0.875rem;      
+      transition: background-color 0.2s;    
+    }    
+    .sort-dropdown-content a:hover {      
+      background-color: #f3f4f6;    
+    }    
+    .sort-dropdown-content a.active {      
+      background-color: #e5e7eb;      
+      font-weight: 500;    
+    }    
+    .show {      
+      display: block;    
     }
-  </script>
-  <!-- PapaParse -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  
-  <style>
-    body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
-    .product-card {
-      transition: all 0.3s ease;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-    .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-    }
-    .fade-in { animation: fadeIn 0.5s ease-in; }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    .filter-btn {
-      background-color: #374151;
-      color: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .filter-btn.active {
-      font-weight: 500;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    }
-    .filter-btn[data-category="all"].active {
-      background-color: #0ea5e9;
-    }
-    .filter-btn[data-category="gamer"].active {
-      background-color: #8b5cf6;
-    }
-    .filter-btn[data-category="home"].active {
-      background-color: #3b82f6;
-    }
-    .filter-btn[data-category="beauty"].active {
-      background-color: #ec4899;
-    }
-    .filter-btn[data-category="pet"].active {
-      background-color: #10b981;
-    }
-    #back-to-top {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background-color: #0ea5e9;
-      color: white;
-      padding: 12px 14px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      z-index: 50;
-      transition: all 0.3s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      font-size: 16px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    #back-to-top:hover {
-      background-color: #0284c7;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .nav-link {
+    /* Price filter styles */
+    .price-filter-container {
       position: relative;
-      padding-bottom: 4px;
+      display: inline-block;
     }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background-color: #0ea5e9;
-      transition: width 0.3s ease;
-    }
-    .nav-link:hover::after {
-      width: 100%;
-    }
-    .search-container {
-      position: relative;
-    }
-    .header-gradient {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    }
-    .coupon-card {
-      background: white;
-      border-radius: 0.5rem;
-      padding: 1rem 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .coupon-code {
-      background: #f3f4f6;
+    .price-filter-btn {
+      background-color: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
       padding: 0.5rem 1rem;
-      border-radius: 0.25rem;
-      font-family: monospace;
-      font-weight: 600;
-    }
-    .copy-btn {
-      background: #0ea5e9;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.25rem;
+      border-radius: 0.375rem;
       cursor: pointer;
-      transition: background 0.2s;
-      font-weight: 500;
-    }
-    .copy-btn:hover {
-      background: #0284c7;
-    }
-    .copy-btn.copied {
-      background: #10b981;
-    }
-    /* Mobile menu styles */
-    .mobile-menu {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 100;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease-in-out;
+      gap: 0.5rem;
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-    .mobile-menu.active {
-      transform: translateX(0);
+    .price-filter-btn:hover {
+      background-color: #f3f4f6;
     }
-    .mobile-menu a {
+    .price-filter-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 220px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 0.375rem;
+      z-index: 1;
+      overflow: hidden;
+      padding: 1rem;
+    }
+    .price-filter-dropdown.show {
+      display: block;
+    }
+    .price-option {
+      padding: 0.5rem 0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border-radius: 0.25rem;
+      padding-left: 0.5rem;
+    }
+    .price-option:hover {
+      background-color: #f3f4f6;
+    }
+    .price-option.active {
+      background-color: #e5e7eb;
+      font-weight: 500;
+    }
+    .price-input-container {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .price-input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+    }
+    .apply-price-btn {
+      background-color: #0ea5e9;
       color: white;
-      font-size: 1.5rem;
-      margin: 1rem 0;
-      text-decoration: none;
+      border: none;
       padding: 0.5rem 1rem;
       border-radius: 0.25rem;
-      transition: all 0.3s;
-    }
-    .mobile-menu a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    .close-menu-btn {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      color: white;
-      font-size: 1.5rem;
-      background: none;
-      border: none;
       cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
     }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col">
-  <header class="py-4 px-4 shadow-lg header-gradient sticky top-0 z-40">
-    <div class="container mx-auto">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <img src="Logo.Nuvii.REDUZ-Photoroom.png" onerror="this.src='Logo.Nuvii.REDUZ-Photoroom.png'" class="w-[80px] md:w-[100px]">
-            <h1 class="text-gray-100 text-2xl md:text-3xl font-semibold hidden sm:block">Nuvii</h1>
-          </div>
-          <button id="mobile-menu-btn" class="md:hidden text-white">
-            <i class="fas fa-bars text-xl"></i>
+    .apply-price-btn:hover {
+      background-color: #0284c7;
+    }
+    .price-filter-badge {
+      display: inline-block;
+      background-color: #0ea5e9;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      margin-left: 0.5rem;
+    }
+  </style> 
+</head> 
+<body class="min-h-screen flex flex-col">  
+  <header class="py-4 px-4 shadow-lg header-gradient sticky top-0 z-40">    
+    <div class="container mx-auto">      
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">        
+        <div class="flex items-center justify-between">          
+          <div class="flex items-center gap-4">            
+            <img src="Logo.Nuvii.REDUZ-Photoroom.png" onerror="this.src='Logo.Nuvii.REDUZ-Photoroom.png'" class="w-[80px] md:w-[100px]">            
+            <h1 class="text-gray-100 text-2xl md:text-3xl font-semibold hidden sm:block">Nuvii</h1>          
+          </div>          
+          <button id="mobile-menu-btn" class="md:hidden text-white">            
+            <i class="fas fa-bars text-xl"></i>          
+          </button>        
+        </div>                                  
+        <div class="flex-1 max-w-2xl">          
+          <div class="search-container">            
+            <input               
+              id="search-input"              
+              type="text"               
+              placeholder="🔍 Pesquisar produtos..."              
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-full bg-white text-gray-800 placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-sm"            
+            />          
+          </div>        
+        </div>                                  
+        <nav class="hidden md:flex items-center gap-6">          
+          <a href="#" class="text-gray-100 hover:text-white nav-link" data-category="all">Início</a>          
+          <a href="#" id="categories-link" class="text-gray-100 hover:text-white nav-link">Cupons</a>        
+        </nav>      
+      </div>    
+    </div>  
+  </header>   
+  <!-- Mobile Menu -->  
+  <div id="mobile-menu" class="mobile-menu">    
+    <button class="close-menu-btn">      
+      <i class="fas fa-times"></i>    
+    </button>    
+    <a href="#" class="mobile-nav-link" data-category="all">Início</a>    
+    <a href="#" class="mobile-nav-link" id="mobile-categories-link">Cupons</a>    
+    <div class="flex flex-col items-center mt-4">      
+      <a href="https://www.tiktok.com/@nuvii.games" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">        
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Games      
+      </a>      
+      <a href="https://www.tiktok.com/@nuvii.beauty" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">        
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Beauty      
+      </a>      
+      <a href="https://www.tiktok.com/@nuvii.home" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">        
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Home      
+      </a>      
+      <a href="https://www.tiktok.com/@nuvii.pet" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">        
+        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Pet      
+      </a>      
+      <a href="https://www.instagram.com/nuvii_oficial/" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">        
+        <i class="fab fa-instagram w-5 text-center"></i> Nuvii Oficial      
+      </a>    
+    </div>  
+  </div>   
+  <div id="categories-dropdown" class="bg-gray-800 shadow-lg sticky top-16 z-30">    
+    <div class="container mx-auto px-4 py-4">      
+      <div class="flex flex-wrap justify-center gap-2 md:gap-4">        
+        <button class="filter-btn active px-4 py-2 rounded-full font-medium transition-all" data-category="all">Todos</button>        
+        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="gamer">          
+          <i class="fas fa-gamepad mr-1"></i> Gamer        
+        </button>        
+        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="home">          
+          <i class="fas fa-home mr-1"></i> Home        
+        </button>        
+        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="beauty">          
+          <i class="fas fa-spa mr-1"></i> Beauty        
+        </button>        
+        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="pet">          
+          <i class="fas fa-paw mr-1"></i> Pet        
+        </button>      
+      </div>    
+    </div>  
+  </div>   
+  <main class="flex-grow container mx-auto px-4 pb-12 mt-8" id="main-content">    
+    <div id="alert" class="hidden mb-6 p-3 rounded-md bg-yellow-50 text-yellow-900 border border-yellow-200 text-sm"></div>     
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">      
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center md:text-left">Descubra os melhores achados</h2>              
+      <!-- Sort and Price Filter -->      
+      <div class="flex gap-2">
+        <!-- Price Filter Dropdown -->
+        <div class="price-filter-container">
+          <button class="price-filter-btn" id="priceFilterBtn">
+            <i class="fas fa-filter mr-1"></i>
+            Filtrar por preço
+            <span id="priceFilterBadge" class="price-filter-badge hidden"></span>
           </button>
-        </div>
-                
-        <div class="flex-1 max-w-2xl">
-          <div class="search-container">
-            <input 
-              id="search-input"
-              type="text" 
-              placeholder="🔍 Pesquisar produtos..."
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-full bg-white text-gray-800 placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-sm"
-            />
+          <div class="price-filter-dropdown" id="priceFilterDropdown">
+            <div class="price-option" data-price="50">Até R$ 50</div>
+            <div class="price-option" data-price="100">Até R$ 100</div>
+            <div class="price-option" data-price="200">Até R$ 200</div>
+            <div class="price-option" data-price="500">Até R$ 500</div>
+            <div class="price-option" data-price="custom">Personalizado</div>
+            <div id="customPriceInput" class="hidden mt-2">
+              <div class="price-input-container">
+                <input type="number" id="minPrice" placeholder="Mínimo" class="price-input">
+                <input type="number" id="maxPrice" placeholder="Máximo" class="price-input">
+              </div>
+              <button class="apply-price-btn w-full mt-2" id="applyCustomPrice">Aplicar</button>
+            </div>
+            <button class="w-full mt-2 text-sm text-primary-600 hover:text-primary-800" id="clearPriceFilter">Limpar filtro</button>
           </div>
         </div>
-                
-        <nav class="hidden md:flex items-center gap-6">
-          <a href="#" class="text-gray-100 hover:text-white nav-link" data-category="all">Início</a>
-          <a href="#" id="categories-link" class="text-gray-100 hover:text-white nav-link">Cupons</a>
-        </nav>
-      </div>
-    </div>
-  </header>
-
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="mobile-menu">
-    <button class="close-menu-btn">
-      <i class="fas fa-times"></i>
-    </button>
-    <a href="#" class="mobile-nav-link" data-category="all">Início</a>
-    <a href="#" class="mobile-nav-link" id="mobile-categories-link">Cupons</a>
-    <div class="flex flex-col items-center mt-4">
-      <a href="https://www.tiktok.com/@nuvii.games" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Games
-      </a>
-      <a href="https://www.tiktok.com/@nuvii.beauty" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Beauty
-      </a>
-      <a href="https://www.tiktok.com/@nuvii.home" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Home
-      </a>
-      <a href="https://www.tiktok.com/@nuvii.pet" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-        <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Pet
-      </a>
-      <a href="https://www.instagram.com/nuvii_oficial/" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-        <i class="fab fa-instagram w-5 text-center"></i> Nuvii Oficial
-      </a>
-    </div>
-  </div>
-
-  <div id="categories-dropdown" class="bg-gray-800 shadow-lg sticky top-16 z-30">
-    <div class="container mx-auto px-4 py-4">
-      <div class="flex flex-wrap justify-center gap-2 md:gap-4">
-        <button class="filter-btn active px-4 py-2 rounded-full font-medium transition-all" data-category="all">Todos</button>
-        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="gamer">
-          <i class="fas fa-gamepad mr-1"></i> Gamer
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="home">
-          <i class="fas fa-home mr-1"></i> Home
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="beauty">
-          <i class="fas fa-spa mr-1"></i> Beauty
-        </button>
-        <button class="filter-btn px-4 py-2 rounded-full font-medium transition-all" data-category="pet">
-          <i class="fas fa-paw mr-1"></i> Pet
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <main class="flex-grow container mx-auto px-4 pb-12 mt-8" id="main-content">
-    <div id="alert" class="hidden mb-6 p-3 rounded-md bg-yellow-50 text-yellow-900 border border-yellow-200 text-sm"></div>
-
-    <div class="mb-6">
-      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">Descubra os melhores achados</h2>
-    </div>
-
-    <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-  </main>
-
-  <div id="coupons-screen" class="hidden flex-grow container mx-auto px-4 pb-12 mt-8">
-    <div class="mb-6">
-      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">Cupons de desconto</h2>
-    </div>
-
-    <div id="coupons-container" class="grid grid-cols-1 gap-4 max-w-2xl mx-auto"></div>
-  </div>
-
-  <footer class="py-4 bg-gray-800 text-gray-300">
-    <div class="container mx-auto px-4">
-      <div class="grid md:grid-cols-3 gap-3">
-        <div class="md:col-span-2">
-          <div class="flex flex-col items-center md:items-start">
-            <img src="Logo.Nuvii.REDUZ-Photoroom.png" alt="Nuvii Logo" class="w-14 mb-1">
-            <p class="text-[11px] text-center md:text-left max-w-md">Encontre os melhores produtos com os melhores preços na Shopee. Siga-nos em nossas redes sociais para ficar por dentro de todas as novidades e promoções.</p>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-white font-semibold mb-2 text-sm text-center md:text-left">Redes Sociais</h4>
-          <div class="grid grid-cols-2 gap-2">
-            <a href="https://www.tiktok.com/@nuvii.games" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Games
-            </a>
-            <a href="https://www.tiktok.com/@nuvii.beauty" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Beauty
-            </a>
-            <a href="https://www.tiktok.com/@nuvii.home" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Home
-            </a>
-            <a href="https://www.tiktok.com/@nuvii.pet" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Pet
-            </a>
-            <a href="https://www.instagram.com/nuvii_oficial/" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-instagram w-5 text-center"></i> Nuvii Oficial
-            </a>
-          </div>
+        
+        <!-- Sort Dropdown -->      
+        <div class="sort-dropdown">          
+          <button class="sort-btn" id="sortBtn">            
+            <i class="fas fa-sort mr-1"></i>            
+            Ordenar por            
+            <i class="fas fa-chevron-down ml-1 text-xs"></i>          
+          </button>          
+          <div class="sort-dropdown-content" id="sortDropdown">            
+            <a href="#" class="active" data-sort="default">Padrão</a>            
+            <a href="#" data-sort="price-asc">Menor para maior</a>            
+            <a href="#" data-sort="price-desc">Maior para menor</a>          
+          </div>        
         </div>
       </div>
-
-      <div class="border-t border-gray-700 mt-4 pt-2">
-        <p class="text-center text-[11px] text-gray-400">© 2025 Nuvii - Todos os direitos reservados</p>
-      </div>
-    </div>
-  </footer>
-
-  <!-- BOTÃO VOLTAR AO TOPO -->
-  <div id="back-to-top" title="Voltar ao topo">
-    <i class="fas fa-arrow-up"></i>
-  </div>
-
-<script>
-  const GOOGLE_SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5lir8J6DTmWER3TUitpJAUTm0uq5aYl8votwX7bZOKuX3_XnzBt8m4DaPEQ0dAJP8uLAhd0Ld1m7X/pub?output=csv";
-  const SHEET_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_SHEET_CSV);
-
-  const productsContainer = document.getElementById('products-container');
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const alertBox = document.getElementById('alert');
-  const searchInput = document.getElementById('search-input');
-  const backToTopBtn = document.getElementById('back-to-top');
-  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const closeMenuBtn = document.querySelector('.close-menu-btn');
-
-  let products = [];
-
-  function showAlert(msg) {
-    alertBox.textContent = msg;
-    alertBox.classList.remove('hidden');
-  }
-
-  function hideAlert() {
-    alertBox.classList.add('hidden');
-  }
-
-  function normalizeKeys(row) {
-    const out = {};
-    Object.keys(row).forEach(k => {
-      const nk = k.replace(/\ufeff/g, '').trim().toLowerCase();
-      out[nk] = row[k];
-    });
-    return out;
-  }
-
-  function mapCategory(cat) {
-    const c = (cat || '').toString().trim().toLowerCase();
-    if (c === 'games' || c === 'game') return 'gamer';
-    if (c === 'pets' || c === 'petshop') return 'pet';
-    if (['gamer', 'home', 'beauty', 'pet'].includes(c)) return c;
-    return 'others';
-  }
-
-  function displayProducts(list) {
-    productsContainer.innerHTML = '';
-    if (!list || list.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'col-span-full text-center text-gray-500 py-12';
-      empty.innerHTML = `
-        <i class="fas fa-search text-4xl mb-4 text-gray-300"></i>
-        <p class="text-lg">Nenhum produto encontrado.</p>
-        <p class="text-sm mt-2 text-gray-400">Tente alterar seus critérios de busca</p>
-      `;
-      productsContainer.appendChild(empty);
-      return;
-    }
-
-    list.forEach(product => {
-      const card = document.createElement('div');
-      card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-md fade-in';
-      card.innerHTML = `
-        <div class="h-48 overflow-hidden bg-gray-100 relative">
-          <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+indisponivel'">
-          <div class="absolute top-2 right-2 text-white text-xs px-2 py-1 rounded-full ${product.category === 'gamer' ? 'bg-purple-600' : product.category === 'home' ? 'bg-blue-600' : product.category === 'beauty' ? 'bg-pink-600' : 'bg-green-600'}">${product.category}</div>
-        </div>
-        <div class="p-4">
-          <h3 class="font-medium text-gray-800 mb-1 line-clamp-2">${product.name || ''}</h3>
-          <p class="text-lg font-semibold text-gray-700 mb-3">${product.price || ''}</p>
-          <a href="${product.link}" target="_blank" rel="noopener" class="block w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 rounded-md transition-colors text-sm font-medium">
-            <i class="fas fa-shopping-cart mr-2"></i>Ver na Shopee
-          </a>
-        </div>`;
-      productsContainer.appendChild(card);
-    });
-  }
-
-  function attachFilters(products) {
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        filterProducts();
-      });
-    });
-  }
-
-  function filterProducts() {
-    const query = (searchInput.value || '').trim().toLowerCase();
-    const activeCategoryBtn = document.querySelector('.filter-btn.active');
-    const category = activeCategoryBtn ? activeCategoryBtn.dataset.category : 'all';
-
-    let filtered = products;
-    if (category !== 'all') filtered = filtered.filter(p => p.category === category);
-    if (query) filtered = filtered.filter(p => p.name.toLowerCase().includes(query));
-
-    displayProducts(filtered);
-
-    // Atualiza o alert da busca
-    const count = filtered.length;
-    if (query) {
-      alertBox.textContent = count + (count === 1 ? ' produto encontrado' : ' produtos encontrados');
-      alertBox.classList.remove('hidden');
-      if (count === 0) {
-        alertBox.classList.remove('bg-yellow-50','text-yellow-900','border-yellow-200');
-        alertBox.classList.add('bg-red-50','text-red-900','border-red-200');
-      } else {
-        alertBox.classList.remove('bg-red-50','text-red-900','border-red-200');
-        alertBox.classList.add('bg-yellow-50','text-yellow-900','border-yellow-200');
-      }
-    } else {
-      hideAlert();
-    }
-  }
-
-  function init() {
-    Papa.parse(SHEET_URL, {
-      download: true,
-      header: true,
-      skipEmptyLines: 'greedy',
-      complete: function (results) {
-        hideAlert();
-        const rows = (results.data || []).map(normalizeKeys).filter(r => r.name || r.image || r.link);
-        products = rows.map(r => ({
-          name: (r.name || '').trim(),
-          price: (r.price || '').trim(),
-          image: (r.image || '').trim(),
-          link: (r.link || '').trim(),
-          category: mapCategory(r.category),
-          code: (r.code || '').trim(),
-          discount: (r.discount || '').trim()
-        })).filter(p => p.name && p.image && p.link);
-
-        displayProducts(products);
-        attachFilters(products);
-
-        if (products.length === 0) showAlert('Não encontrei produtos válidos na planilha.');
-      },
-      error: function (err) {
-        console.error(err);
-        showAlert('Falha ao carregar a planilha online.');
-      }
-    });
-  }
-
-  // Mobile menu functionality
-  function toggleMobileMenu() {
-    mobileMenu.classList.toggle('active');
-    document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
-  }
-
-  mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-  closeMenuBtn.addEventListener('click', toggleMobileMenu);
-
-  // Close mobile menu when clicking on a link
-  document.querySelectorAll('.mobile-nav-link').forEach(link => {
-    link.addEventListener('click', function() {
-      toggleMobileMenu();
-    });
-  });
-
-  // BOTÃO VOLTAR AO TOPO
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) backToTopBtn.style.display = 'block';
-    else backToTopBtn.style.display = 'none';
-  });
-
-  backToTopBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  // Search functionality
-  searchInput.addEventListener('input', filterProducts);
+    </div>     
+    <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>  
+  </main>   
+  <div id="coupons-screen" class="hidden flex-grow container mx-auto px-4 pb-12 mt-8">    
+    <div class="mb-6">      
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">Cupons de desconto</h2>    
+    </div>     
+    <div id="coupons-container" class="grid grid-cols-1 gap-4 max-w-2xl mx-auto"></div>  
+  </div>   
+  <footer class="py-4 bg-gray-800 text-gray-300">    
+    <div class="container mx-auto px-4">      
+      <div class="grid md:grid-cols-3 gap-3">        
+        <div class="md:col-span-2">          
+          <div class="flex flex-col items-center md:items-start">            
+            <img src="Logo.Nuvii.REDUZ-Photoroom.png" alt="Nuvii Logo" class="w-14 mb-1">            
+            <p class="text-[11px] text-center md:text-left max-w-md">Encontre os melhores produtos com os melhores preços na Shopee. Siga-nos em nossas redes sociais para ficar por dentro de todas as novidades e promoções.</p>          
+          </div>        
+        </div>         
+        <div>          
+          <h4 class="text-white font-semibold mb-2 text-sm text-center md:text-left">Redes Sociais</h4>          
+          <div class="grid grid-cols-2 gap-2">            
+            <a href="https://www.tiktok.com/@nuvii.games" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">              
+              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Games            
+            </a>            
+            <a href="https://www.tiktok.com/@nuvii.beauty" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">              
+              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Beauty            
+            </a>            
+            <a href="https://www.tiktok.com/@nuvii.home" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">              
+              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Home            
+            </a>            
+            <a href="https://www.tiktok.com/@nuvii.pet" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">              
+              <i class="fab fa-tiktok w-5 text-center"></i> Nuvii Pet            
+            </a>            
+            <a href="https://www.instagram.com/nuvii_oficial/" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm" target="_blank" rel="noopener noreferrer">              
+              <i class="fab fa-instagram w-5 text-center"></i> Nuvii Oficial            
+            </a>          
+          </div>        
+        </div>      
+      </div>       
+      <div class="border-t border-gray-700 mt-4 pt-2">        
+        <p class="text-center text-[11px] text-gray-400">© 2025 Nuvii - Todos os direitos reservados</p>      
+      </div>    
+    </div>  
+  </footer>   
+  <!-- BOTÃO VOLTAR AO TOPO -->  
+  <div id="back-to-top" title="Voltar ao topo">    
+    <i class="fas fa-arrow-up"></i>  
+  </div> 
+<script>  
+  const GOOGLE_SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5lir8J6DTmWER3TUitpJAUTm0uq5aYl8votwX7bZOKuX3_XnzBt8m4DaPEQ0dAJP8uLAhd0Ld1m7X/pub?output=csv";  
+  const SHEET_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_SHEET_CSV);   
+  const productsContainer = document.getElementById('products-container');  
+  const filterButtons = document.querySelectorAll('.filter-btn');  
+  const alertBox = document.getElementById('alert');  
+  const searchInput = document.getElementById('search-input');  
+  const backToTopBtn = document.getElementById('back-to-top');  
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');  
+  const mobileMenu = document.getElementById('mobile-menu');  
+  const closeMenuBtn = document.querySelector('.close-menu-btn');  
+  const sortBtn = document.getElementById('sortBtn');  
+  const sortDropdown = document.getElementById('sortDropdown');  
+  const sortOptions = document.querySelectorAll('#sortDropdown a');   
+  // Price filter elements
+  const priceFilterBtn = document.getElementById('priceFilterBtn');
+  const priceFilterDropdown = document.getElementById('priceFilterDropdown');
+  const priceOptions = document.querySelectorAll('.price-option');
+  const customPriceInput = document.getElementById('customPriceInput');
+  const minPriceInput = document.getElementById('minPrice');
+  const maxPriceInput = document.getElementById('maxPrice');
+  const applyCustomPriceBtn = document.getElementById('applyCustomPrice');
+  const clearPriceFilterBtn = document.getElementById('clearPriceFilter');
+  const priceFilterBadge = document.getElementById('priceFilterBadge');
   
-  // Make nav links with data-category work like filter buttons
-  document.querySelectorAll('.nav-link[data-category], .mobile-nav-link[data-category]').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('main-content').classList.remove('hidden');
-      document.getElementById('coupons-screen').classList.add('hidden');
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelector(`.filter-btn[data-category="${this.dataset.category}"]`).classList.add('active');
-      filterProducts();
-    });
-  });
-
-  // Coupons screen functionality
-  document.getElementById('categories-link').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('main-content').classList.add('hidden');
-    document.getElementById('coupons-screen').classList.remove('hidden');
-    showCoupons();
-  });
-
-  // Mobile coupons link
-  document.getElementById('mobile-categories-link').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('main-content').classList.add('hidden');
-    document.getElementById('coupons-screen').classList.remove('hidden');
-    showCoupons();
-    toggleMobileMenu();
-  });
-
-  function showCoupons() {
-    const couponsContainer = document.getElementById('coupons-container');
-    couponsContainer.innerHTML = '';
-
-    if (products.length === 0) {
-      couponsContainer.innerHTML = '<p class="text-center text-gray-500">Nenhum cupom encontrado</p>';
-      return;
+  let products = [];  
+  let currentSort = 'default'; 
+  let currentPriceFilter = null;
+  let customPriceRange = { min: null, max: null };
+  
+  function showAlert(msg) {    
+    alertBox.textContent = msg;    
+    alertBox.classList.remove('hidden');  
+  }   
+  function hideAlert() {    
+    alertBox.classList.add('hidden');  
+  }   
+  function normalizeKeys(row) {    
+    const out = {};    
+    Object.keys(row).forEach(k => {      
+      const nk = k.replace(/\ufeff/g, '').trim().toLowerCase();      
+      out[nk] = row[k];    
+    });    
+    return out;  
+  }   
+  function mapCategory(cat) {    
+    const c = (cat || '').toString().trim().toLowerCase();    
+    if (c === 'games' || c === 'game') return 'gamer';    
+    if (c === 'pets' || c === 'petshop') return 'pet';    
+    if (['gamer', 'home', 'beauty', 'pet'].includes(c)) return c;    
+    return 'others';  
+  }   
+  function extractPrice(priceStr) {    
+    // Remove non-numeric characters except comma and dot    
+    const cleaned = priceStr.replace(/[^\d,.]/g, '');    
+    // Replace comma with dot for decimal    
+    const numericStr = cleaned.replace(',', '.');    
+    // Convert to number    
+    return parseFloat(numericStr) || 0;  
+  }   
+  function displayProducts(list) {    
+    productsContainer.innerHTML = '';    
+    if (!list || list.length === 0) {      
+      const empty = document.createElement('div');      
+      empty.className = 'col-span-full text-center text-gray-500 py-12';      
+      empty.innerHTML = `        
+        <i class="fas fa-search text-4xl mb-4 text-gray-300"></i>        
+        <p class="text-lg">Nenhum produto encontrado.</p>        
+        <p class="text-sm mt-2 text-gray-400">Tente alterar seus critérios de busca</p>      
+      `;      
+      productsContainer.appendChild(empty);      
+      return;    
+    }     
+    list.forEach(product => {      
+      const card = document.createElement('div');      
+      card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-md fade-in';      
+      card.innerHTML = `        
+        <div class="h-48 overflow-hidden bg-gray-100 relative">          
+          <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+indisponivel'">          
+          <div class="absolute top-2 right-2 text-white text-xs px-2 py-1 rounded-full ${product.category === 'gamer' ? 'bg-purple-600' : product.category === 'home' ? 'bg-blue-600' : product.category === 'beauty' ? 'bg-pink-600' : 'bg-green-600'}">${product.category}</div>        
+        </div>        
+        <div class="p-4">          
+          <h3 class="font-medium text-gray-800 mb-1 line-clamp-2">${product.name || ''}</h3>          
+          <p class="text-lg font-semibold text-gray-700 mb-3">${product.price || ''}</p>          
+          <a href="${product.link}" target="_blank" rel="noopener" class="block w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 rounded-md transition-colors text-sm font-medium">            
+            <i class="fas fa-shopping-cart mr-2"></i>Ver na Shopee          
+          </a>        
+        </div>`;      
+      productsContainer.appendChild(card);    
+    });  
+  }   
+  function attachFilters(products) {    
+    filterButtons.forEach(button => {      
+      button.addEventListener('click', function () {        
+        filterButtons.forEach(btn => btn.classList.remove('active'));        
+        this.classList.add('active');        
+        filterProducts();      
+      });    
+    });  
+  }   
+  function sortProducts(products, sortType) {    
+    if (sortType === 'default') return [...products];         
+    return [...products].sort((a, b) => {      
+      const priceA = extractPrice(a.price);      
+      const priceB = extractPrice(b.price);             
+      if (sortType === 'price-asc') {        
+        return priceA - priceB;      
+      } else if (sortType === 'price-desc') {        
+        return priceB - priceA;      
+      }      
+      return 0;    
+    });  
+  }   
+  function filterProducts() {    
+    const query = (searchInput.value || '').trim().toLowerCase();    
+    const activeCategoryBtn = document.querySelector('.filter-btn.active');    
+    const category = activeCategoryBtn ? activeCategoryBtn.dataset.category : 'all';     
+    let filtered = products;    
+    if (category !== 'all') filtered = filtered.filter(p => p.category === category);    
+    if (query) filtered = filtered.filter(p => p.name.toLowerCase().includes(query));         
+    // Apply price filter if set
+    if (currentPriceFilter) {
+      if (currentPriceFilter === 'custom') {
+        if (customPriceRange.min !== null || customPriceRange.max !== null) {
+          filtered = filtered.filter(p => {
+            const price = extractPrice(p.price);
+            const min = customPriceRange.min !== null ? customPriceRange.min : 0;
+            const max = customPriceRange.max !== null ? customPriceRange.max : Infinity;
+            return price >= min && price <= max;
+          });
+        }
+      } else {
+        const maxPrice = parseFloat(currentPriceFilter);
+        filtered = filtered.filter(p => extractPrice(p.price) <= maxPrice);
+      }
     }
-
-    // Filter products that have coupon data
-    const coupons = products.filter(p => p.code && p.discount);
-
-    if (coupons.length === 0) {
-      couponsContainer.innerHTML = '<p class="text-center text-gray-500">Nenhum cupom encontrado</p>';
-      return;
-    }
-
-    // Create a grid container with 2 columns
-    const grid = document.createElement('div');
-    grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 w-full';
-
-    coupons.forEach(coupon => {
-      const card = document.createElement('div');
-      card.className = 'coupon-card';
-      card.innerHTML = `
-        <div class="flex justify-between items-center">
-          <div class="text-lg font-semibold text-gray-800">${coupon.discount}</div>
-          <div class="flex items-center gap-2">
-            <div class="coupon-code">${coupon.code}</div>
-            <button class="copy-btn" onclick="copyCouponCode(this, '${coupon.code}')">Copiar código</button>
-          </div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    couponsContainer.appendChild(grid);
-  }
-
-  function copyCouponCode(button, code) {
-    navigator.clipboard.writeText(code).then(() => {
-      button.textContent = 'Copiado!';
-      button.classList.add('copied');
-      setTimeout(() => {
-        button.textContent = 'Copiar código';
-        button.classList.remove('copied');
-      }, 2000);
-    });
-  }
-
-  // Make back button work from coupons screen
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('.filter-btn')) {
-      document.getElementById('main-content').classList.remove('hidden');
-      document.getElementById('coupons-screen').classList.add('hidden');
-    }
-  });
-
-  // Make filter buttons clickable from both header and filter section
-  function setupFilterButtons() {
-    document.querySelectorAll('[data-category]').forEach(button => {
-      button.addEventListener('click', function() {
-        document.querySelectorAll('[data-category]').forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        filterProducts();
-      });
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    init();
-    setupFilterButtons();
     
-    // Set fixed margin for main content
-    document.getElementById('main-content').style.marginTop = '4rem';
+    // Apply current sort    
+    filtered = sortProducts(filtered, currentSort);     
+    displayProducts(filtered);     
+    // Atualiza o alert da busca    
+    const count = filtered.length;    
+    if (query || currentPriceFilter) {      
+      alertBox.textContent = count + (count === 1 ? ' produto encontrado' : ' produtos encontrados');      
+      alertBox.classList.remove('hidden');      
+      if (count === 0) {        
+        alertBox.classList.remove('bg-yellow-50','text-yellow-900','border-yellow-200');        
+        alertBox.classList.add('bg-red-50','text-red-900','border-red-200');      
+      } else {        
+        alertBox.classList.remove('bg-red-50','text-red-900','border-red-200');        
+        alertBox.classList.add('bg-yellow-50','text-yellow-900','border-yellow-200');      
+      }    
+    } else {      
+      hideAlert();    
+    }  
+  }   
+  function init() {    
+    Papa.parse(SHEET_URL, {      
+      download: true,      
+      header: true,      
+      skipEmptyLines: 'greedy',      
+      complete: function (results) {        
+        hideAlert();        
+        const rows = (results.data || []).map(normalizeKeys).filter(r => r.name || r.image || r.link);        
+        products = rows.map(r => ({          
+          name: (r.name || '').trim(),          
+          price: (r.price || '').trim(),          
+          image: (r.image || '').trim(),          
+          link: (r.link || '').trim(),          
+          category: mapCategory(r.category),          
+          code: (r.code || '').trim(),          
+          discount: (r.discount || '').trim()        
+        })).filter(p => p.name && p.image && p.link);         
+        displayProducts(products);        
+        attachFilters(products);         
+        if (products.length === 0) showAlert('Não encontrei produtos válidos na planilha.');      
+      },      
+      error: function (err) {        
+        console.error(err);        
+        showAlert('Falha ao carregar a planilha online.');      
+      }    
+    });  
+  }   
+  // Mobile menu functionality  
+  function toggleMobileMenu() {    
+    mobileMenu.classList.toggle('active');    
+    document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';  
+  }   
+  mobileMenuBtn.addEventListener('click', toggleMobileMenu);  
+  closeMenuBtn.addEventListener('click', toggleMobileMenu);   
+  // Close mobile menu when clicking on any link, button or interactive element
+  document.querySelectorAll('.mobile-menu a, .mobile-menu button, .mobile-menu .mobile-nav-link').forEach(element => {    
+    element.addEventListener('click', function() {      
+      toggleMobileMenu();    
+    });  
+  });   
+  // BOTÃO VOLTAR AO TOPO  
+  window.addEventListener('scroll', () => {    
+    if (window.scrollY > 300) backToTopBtn.style.display = 'block';    
+    else backToTopBtn.style.display = 'none';  
+  });   
+  backToTopBtn.addEventListener('click', () => {    
+    window.scrollTo({ top: 0, behavior: 'smooth' });  
+  });   
+  // Search functionality  
+  searchInput.addEventListener('input', filterProducts);       
+  // Make nav links with data-category work like filter buttons  
+  document.querySelectorAll('.nav-link[data-category], .mobile-nav-link[data-category]').forEach(link => {    
+    link.addEventListener('click', function(e) {      
+      e.preventDefault();      
+      document.getElementById('main-content').classList.remove('hidden');      
+      document.getElementById('coupons-screen').classList.add('hidden');      
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));      
+      document.querySelector(`.filter-btn[data-category="${this.dataset.category}"]`).classList.add('active');      
+      filterProducts();
+      if (mobileMenu.classList.contains('active')) {
+        toggleMobileMenu();
+      }
+    });  
+  });   
+  // Coupons screen functionality  
+  document.getElementById('categories-link').addEventListener('click', function(e) {    
+    e.preventDefault();    
+    document.getElementById('main-content').classList.add('hidden');    
+    document.getElementById('coupons-screen').classList.remove('hidden');    
+    showCoupons();
+    if (mobileMenu.classList.contains('active')) {
+      toggleMobileMenu();
+    }
+  });   
+
+  // Close menu button
+  closeMenuBtn.addEventListener('click', function() {
+    if (mobileMenu.classList.contains('active')) {
+      toggleMobileMenu();
+    }
+  });
+  // Mobile coupons link  
+  document.getElementById('mobile-categories-link').addEventListener('click', function(e) {    
+    e.preventDefault();    
+    document.getElementById('main-content').classList.add('hidden');    
+    document.getElementById('coupons-screen').classList.remove('hidden');    
+    showCoupons();    
+    if (mobileMenu.classList.contains('active')) {
+      toggleMobileMenu();
+    }
+  });   
+  function showCoupons() {    
+    const couponsContainer = document.getElementById('coupons-container');    
+    couponsContainer.innerHTML = '';     
+    if (products.length === 0) {      
+      couponsContainer.innerHTML = '<p class="text-center text-gray-500">Nenhum cupom encontrado</p>';      
+      return;    
+    }     
+    // Filter products that have coupon data    
+    const coupons = products.filter(p => p.code && p.discount);     
+    if (coupons.length === 0) {      
+      couponsContainer.innerHTML = '<p class="text-center text-gray-500">Nenhum cupom encontrado</p>';      
+      return;    
+    }     
+    // Create a grid container with 2 columns    
+    const grid = document.createElement('div');    
+    grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 w-full';     
+    coupons.forEach(coupon => {      
+      const card = document.createElement('div');      
+      card.className = 'coupon-card';      
+      card.innerHTML = `        
+        <div class="flex justify-between items-center">          
+          <div class="text-lg font-semibold text-gray-800">${coupon.discount}</div>          
+          <div class="flex items-center gap-2">            
+            <div class="coupon-code">${coupon.code}</div>            
+            <button class="copy-btn" onclick="copyCouponCode(this, '${coupon.code}')">Copiar código</button>          
+          </div>        
+        </div>      
+      `;      
+      grid.appendChild(card);    
+    });     
+    couponsContainer.appendChild(grid);  
+  }   
+  function copyCouponCode(button, code) {    
+    navigator.clipboard.writeText(code).then(() => {      
+      button.textContent = 'Copiado!';      
+      button.classList.add('copied');      
+      setTimeout(() => {        
+        button.textContent = 'Copiar código';        
+        button.classList.remove('copied');      
+      }, 2000);    
+    });  
+  }   
+  // Make back button work from coupons screen  
+  document.addEventListener('click', function(e) {    
+    if (e.target.closest('.filter-btn')) {      
+      document.getElementById('main-content').classList.remove('hidden');      
+      document.getElementById('coupons-screen').classList.add('hidden');    
+    }  
+  });   
+  // Make filter buttons clickable from both header and filter section  
+  function setupFilterButtons() {    
+    document.querySelectorAll('[data-category]').forEach(button => {      
+      button.addEventListener('click', function() {        
+        document.querySelectorAll('[data-category]').forEach(btn => btn.classList.remove('active'));        
+        this.classList.add('active');        
+        filterProducts();      
+      });    
+    });  
+  }   
+  // Sort dropdown functionality  
+  sortBtn.addEventListener('click', function(e) {    
+    e.stopPropagation();    
+    sortDropdown.classList.toggle('show');  
+  });   
+  // Close dropdown when clicking outside  
+  window.addEventListener('click', function() {    
+    sortDropdown.classList.remove('show');    
+    priceFilterDropdown.classList.remove('show');
+  });   
+  // Sort option selection  
+  sortOptions.forEach(option => {    
+    option.addEventListener('click', function(e) {      
+      e.preventDefault();      
+      currentSort = this.dataset.sort;             
+      // Update active state      
+      sortOptions.forEach(opt => opt.classList.remove('active'));      
+      this.classList.add('active');             
+      // Update button text      
+      if (currentSort === 'default') {        
+        sortBtn.innerHTML = '<i class="fas fa-sort mr-1"></i> Ordenar por <i class="fas fa-chevron-down ml-1 text-xs"></i>';      
+      } else if (currentSort === 'price-asc') {        
+        sortBtn.innerHTML = '<i class="fas fa-sort-amount-down mr-1"></i> Menor <i class="fas fa-chevron-down ml-1 text-xs"></i>';      
+      } else if (currentSort === 'price-desc') {        
+        sortBtn.innerHTML = '<i class="fas fa-sort-amount-down-alt mr-1"></i> Maior <i class="fas fa-chevron-down ml-1 text-xs"></i>';      
+      }             
+      // Close dropdown and filter products      
+      sortDropdown.classList.remove('show');      
+      filterProducts();    
+    });  
+  });   
+  // Price filter functionality
+  priceFilterBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    priceFilterDropdown.classList.toggle('show');
+  });
+  
+  priceOptions.forEach(option => {
+    option.addEventListener('click', function(e) {
+      e.stopPropagation(); // Prevent closing dropdown when clicking options
+      if (this.dataset.price === 'custom') {
+        customPriceInput.classList.remove('hidden');
+        priceOptions.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+        // Don't close the dropdown
+      } else {
+        customPriceInput.classList.add('hidden');
+        priceOptions.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+        currentPriceFilter = this.dataset.price;
+        customPriceRange = { min: null, max: null };
+        
+        // Update button text and show badge
+        priceFilterBtn.innerHTML = `
+          <i class="fas fa-filter mr-1"></i>
+          Até R$ ${currentPriceFilter}
+          <span id="priceFilterBadge" class="price-filter-badge">Filtro</span>
+        `;
+        
+        filterProducts();
+        priceFilterDropdown.classList.remove('show');
+      }
+    });
   });
 
-  // Make copyCouponCode function available globally
-  window.copyCouponCode = copyCouponCode;
-</script>
-</body>
+  // Prevent dropdown from closing when clicking inside price inputs
+  minPriceInput.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  maxPriceInput.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+  
+  applyCustomPriceBtn.addEventListener('click', function() {
+    const min = minPriceInput.value ? parseFloat(minPriceInput.value) : null;
+    const max = maxPriceInput.value ? parseFloat(maxPriceInput.value) : null;
+    
+    if ((min !== null && isNaN(min)) || (max !== null && isNaN(max))) {
+      showAlert('Por favor, insira valores numéricos válidos.');
+      return;
+    }
+    
+    if (min !== null && max !== null && min > max) {
+      showAlert('O valor mínimo não pode ser maior que o máximo.');
+      return;
+    }
+    
+    currentPriceFilter = 'custom';
+    customPriceRange = { min, max };
+    
+    // Update button text and show badge
+    let filterText = 'Preço';
+    if (min !== null && max !== null) {
+      filterText = `R$ ${min} - ${max}`;
+    } else if (min !== null) {
+      filterText = `Acima de R$ ${min}`;
+    } else if (max !== null) {
+      filterText = `Até R$ ${max}`;
+    }
+    
+    priceFilterBtn.innerHTML = `
+      <i class="fas fa-filter mr-1"></i>
+      ${filterText}
+      <span id="priceFilterBadge" class="price-filter-badge">Filtro</span>
+    `;
+    
+    filterProducts();
+    priceFilterDropdown.classList.remove('show');
+    customPriceInput.classList.add('hidden');
+  });
+  
+  clearPriceFilterBtn.addEventListener('click', function() {
+    currentPriceFilter = null;
+    customPriceRange = { min: null, max: null };
+    minPriceInput.value = '';
+    maxPriceInput.value = '';
+    customPriceInput.classList.add('hidden');
+    priceOptions.forEach(opt => opt.classList.remove('active'));
+    
+    // Reset button text and hide badge
+    priceFilterBtn.innerHTML = `
+      <i class="fas fa-filter mr-1"></i>
+      Filtrar por preço
+      <span id="priceFilterBadge" class="price-filter-badge hidden"></span>
+    `;
+    
+    filterProducts();
+  });
+  
+  document.addEventListener('DOMContentLoaded', function() {    
+    init();    
+    setupFilterButtons();             
+    // Set fixed margin for main content    
+    document.getElementById('main-content').style.marginTop = '4rem';  
+  });   
+  // Make copyCouponCode function available globally  
+  window.copyCouponCode = copyCouponCode; 
+</script> 
+</body> 
 </html>
