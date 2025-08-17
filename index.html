@@ -298,15 +298,22 @@
     }
     .price-input-container {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
       margin-top: 0.5rem;
     }
     .price-input {
-      flex: 1;
+      flex: 1 1 100%;
       padding: 0.5rem;
       border: 1px solid #d1d5db;
       border-radius: 0.25rem;
       font-size: 0.875rem;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .price-input {
+        flex: 1 1 0;
+      }
     }
     .apply-price-btn {
       background-color: #0ea5e9;
